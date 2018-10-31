@@ -45,7 +45,6 @@ class Mp3Player {
 
   destroy() {
     this.media.pause();
-    this.media.src = null;
     removeAudio(this.media);
   }
 }
