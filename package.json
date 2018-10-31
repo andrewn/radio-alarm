@@ -1,5 +1,5 @@
 {
-  "name": "clock-radio",
+  "name": "radio-alarm",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "dashjs": "^2.9.2",
     "lodash-es": "^4.17.11",
