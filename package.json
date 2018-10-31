@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "dashjs": "^2.9.2",
+    "lodash-es": "^4.17.11",
     "mitt": "^1.1.3"
   }
 }

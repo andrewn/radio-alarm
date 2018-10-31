@@ -1,4 +1,5 @@
 import createWebsocket from "/websocket/module.js";
+import throttle from "./modules/lodash-es/throttle.js";
 
 import { start, onTick } from "./lib/clock.js";
 import { currentTime } from "./lib/time.js";
@@ -14,7 +15,7 @@ async function fetchConfig() {
 const main = async () => {
   console.log("Clock Radio: internal: app loaded");
 
-  const websocket = createWebsocket({ debug: true });
+  const websocket = createWebsocket();
   await websocket.ready;
 
   const { stations, alarm } = await fetchConfig();
@@ -63,6 +64,12 @@ const main = async () => {
           }
         }
         return;
+      case "VOLUME_DOWN":
+        player.volume = player.volume - 10;
+        return;
+      case "VOLUME_UP":
+        player.volume = player.volume + 10;
+        return;
       default:
         console.log(`No action for type ${action.type}`, action);
     }
@@ -98,9 +105,28 @@ const main = async () => {
     }
   );
 
-  websocket.subscribe(new RegExp(".*"), ({ topic, payload }) => {
-    console.log("Recieved power press", topic, payload);
-  });
+  let lastRotation = 0;
+
+  const handleTurn = throttle(
+    function({ topic, payload }) {
+      console.log("Recieved encoder turn", topic, payload);
+      if (payload.value > lastRotation) {
+        dispatch({ type: "VOLUME_UP" });
+      } else if (payload.value < lastRotation) {
+        dispatch({ type: "VOLUME_DOWN" });
+      }
+
+      lastRotation = payload.value;
+    },
+    100 /* timeout */,
+    { leading: true } /* invoke at start */
+  );
+
+  websocket.subscribe("physical/event/encoder-power-turn", handleTurn);
+
+  // websocket.subscribe(new RegExp(".*"), ({ topic, payload }) => {
+  //   console.log("Recieved power press", topic, payload);
+  // });
 
   // Internal UI
   document.querySelector("#toggle").addEventListener("click", function() {
@@ -109,6 +135,14 @@ const main = async () => {
 
   document.querySelector("#next").addEventListener("click", function() {
     dispatch({ type: "NEXT" });
+  });
+
+  document.querySelector("#down").addEventListener("click", function() {
+    dispatch({ type: "VOLUME_DOWN" });
+  });
+
+  document.querySelector("#up").addEventListener("click", function() {
+    dispatch({ type: "VOLUME_UP" });
   });
 
   // Add initial test alarm

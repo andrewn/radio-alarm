@@ -19,6 +19,14 @@ class DashPlayer {
     return this.dashPlayer.isPaused();
   }
 
+  get volume() {
+    return this.media.volume;
+  }
+
+  set volume(value) {
+    this.media.volume = value;
+  }
+
   destroy() {
     this.dashPlayer.reset();
     removeAudio(this.media);
@@ -41,6 +49,14 @@ class Mp3Player {
 
   get paused() {
     return this.media.paused;
+  }
+
+  get volume() {
+    return this.media.volume;
+  }
+
+  set volume(value) {
+    this.media.volume = value;
   }
 
   destroy() {
@@ -68,6 +84,23 @@ export default function(root) {
 
     get source() {
       return source;
+    },
+
+    get volume() {
+      return player.volume * 100;
+    },
+
+    set volume(value) {
+      let clamped = value;
+      if (value < 0) {
+        clamped = 0;
+      }
+
+      if (value > 100) {
+        clamped = 100;
+      }
+
+      player.volume = clamped / 100;
     },
 
     set source(value) {
