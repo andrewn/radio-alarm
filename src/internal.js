@@ -1,5 +1,4 @@
-// const appName = window.location.pathname.replace(/\//g, '');
-// const websocket = createWebsocket();
+import createWebsocket from "/websocket/module.js";
 
 import { start, onTick } from "./lib/clock.js";
 import { currentTime } from "./lib/time.js";
@@ -15,6 +14,9 @@ async function fetchConfig() {
 const main = async () => {
   console.log("Clock Radio: internal: app loaded");
 
+  const websocket = createWebsocket({ debug: true });
+  await websocket.ready;
+
   const { stations, alarm } = await fetchConfig();
   const now = currentTime();
   const player = createMediaPlayer(document.body);
@@ -28,9 +30,17 @@ const main = async () => {
     switch (action.type) {
       case "PLAY":
         player.play();
+        websocket.publish({
+          topic: "physical/command/ledrgb-power-change",
+          payload: { isOn: true, color: "green" }
+        });
         return;
       case "STOP":
         player.pause();
+        websocket.publish({
+          topic: "physical/command/ledrgb-power-change",
+          payload: { isOn: false }
+        });
         return;
       case "TOGGLE":
         player.paused ? dispatch({ type: "PLAY" }) : dispatch({ type: "STOP" });
@@ -70,6 +80,27 @@ const main = async () => {
   if (station != null) {
     dispatch({ type: "SOURCE", payload: station });
   }
+
+  // Buttons
+  websocket.subscribe(
+    "physical/event/button-power-release",
+    ({ topic, payload }) => {
+      console.log("Recieved power press", topic, payload);
+      dispatch({ type: "TOGGLE" });
+    }
+  );
+
+  websocket.subscribe(
+    "physical/event/button-next-release",
+    ({ topic, payload }) => {
+      console.log("Recieved next press", topic, payload);
+      dispatch({ type: "NEXT" });
+    }
+  );
+
+  websocket.subscribe(new RegExp(".*"), ({ topic, payload }) => {
+    console.log("Recieved power press", topic, payload);
+  });
 
   // Internal UI
   document.querySelector("#toggle").addEventListener("click", function() {
