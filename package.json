@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dashjs": "^2.9.2",
     "mitt": "^1.1.3"
   }
 }

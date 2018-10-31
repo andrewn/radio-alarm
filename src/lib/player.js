@@ -1,3 +1,5 @@
+import "../modules/dashjs/dist/dash.all.min.js";
+
 class DashPlayer {
   constructor(root, url) {
     this.media = createAndUseAudio(root);
