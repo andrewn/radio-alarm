@@ -4,12 +4,27 @@
 <head>
   <meta charset="UTF-8">
   <script src="/websocket"></script>
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
   <title>Clock Radio</title>
+  <style type="text/css">
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    button {
+      border: 2px solid salmon;
+      background: salmon;
+      padding: 5px;
+      color: white;
+      font-size: 1.5rem;
+    }
+  </style>
 </head>
 
 <body>
   <h1>Clock Radio</h1>
   <button id="toggle">Toggle</button>
+  <button id="next">Next</button>
   <script type="module" src="internal.js"></script>
 </body>
 
