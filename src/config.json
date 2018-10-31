@@ -1,0 +1,16 @@
+{
+  "alarm": { "hours": 16, "minutes": 11 },
+
+  "stations": [
+    {
+      "id": "radio4",
+      "type": "dash",
+      "url": "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnw/bbc_radio_fourfm.mpd"
+    },
+    {
+      "id": "nts",
+      "type": "mp3",
+      "url": "https://stream-relay-geo.ntslive.net/stream2?t=1540991152981"
+    }
+  ]
+}

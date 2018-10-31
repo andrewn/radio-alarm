@@ -7,30 +7,20 @@ import { createAlarm, addAlarm, checkAlarms } from "./lib/alarm.js";
 import createMediaPlayer, { createAndUseAudio } from "./lib/player.js";
 import * as state from "./lib/state.js";
 
-const stations = [
-  // radio4: {
-  //   type: "hls",
-  //   url:
-  //     "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_radio_fourfm.m3u8"
-  // },
-  {
-    id: "radio4",
-    type: "dash",
-    url:
-      "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/dash/nonuk/dash_low/llnw/bbc_radio_fourfm.mpd"
-  },
-  {
-    id: "nts",
-    type: "mp3",
-    url: "https://stream-relay-geo.ntslive.net/stream2?t=1540991152981"
-  }
-];
+async function fetchConfig() {
+  const response = await fetch("./config.json");
+  return await response.json();
+}
 
 const main = async () => {
-  console.log("Clock Radio: internal: app loaded", state.get());
+  console.log("Clock Radio: internal: app loaded");
 
+  const { stations, alarm } = await fetchConfig();
   const now = currentTime();
   const player = createMediaPlayer(document.body);
+
+  console.log("state:", state.get());
+  console.log("config:", stations, alarm);
 
   const dispatch = function(action) {
     console.log("ACTION", action.type, action.payload);
@@ -93,7 +83,7 @@ const main = async () => {
   // Add initial test alarm
   addAlarm(
     createAlarm({
-      target: { hours: now.hours, minutes: now.minutes + 1 },
+      target: alarm,
       action: { type: "PLAY" }
     })
   );
